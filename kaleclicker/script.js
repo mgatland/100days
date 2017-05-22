@@ -85,8 +85,12 @@ assets.forEach(setupAsset);
 function setupAsset(asset) {
 	asset.countElement = document.querySelector("." + asset.codeName + "Display");
 	asset.progressElement = document.querySelector("." + asset.codeName + "ProgressDisplay");
+	asset.progressElement.classList.add("hidden");
+	asset.progressElement.innerHTML = "<div class='display barLabel'>" + asset.activityText + " (" + asset.payoff + " kale): </div><div class='bar'></div>";
+	asset.barElement = document.querySelector("." + asset.codeName + "Block .bar");
 	asset.blockElement = document.querySelector("." + asset.codeName + "Block");
 	asset.buttonElement = document.querySelector("." + asset.codeName + "Buy");
+
 	asset.buttonElement.addEventListener("click", function () {
 		buyAsset(asset)
 	})
@@ -101,29 +105,36 @@ function setButtonText(asset) {
 function buyAsset(asset) {
 	if (total >= asset.cost) {
 		total -= asset.cost;
+		asset.count++;
 		addMessage(asset.buyMessageText);
 		asset.cost = Math.floor(asset.cost * 1.1);
 		setButtonText(asset);
 		asset.countElement.innerHTML = "You have " + asset.count + asset.pluralText;
-		asset.count++;
+		if (asset.count == 1) {
+			//first purchase
+			asset.progressElement.classList.remove("hidden");
+		}
 	}
 	updateDisplay();
+}
+
+function setBarWidth(barElement, widthPercent) {
+  barElement.style.width= Math.floor((100-widthPercent)*1.5) +  'px';
 }
 
 //tick
 var tickFunction = function (timestamp) {
 	if (oldTick === undefined) oldTick = timestamp;
 	var ticks = Math.round((timestamp - oldTick) / 16);
-	console.log(ticks);
 	oldTick = oldTick + ticks * 16;
 	if (ticks > 0) {
 		assets.forEach(tickAsset, {ticks: ticks});
 		if (pickTimer < 100) {
 			pickTimer += 6 * ticks;
-			pickTimerElement.innerHTML = Array(Math.max(1,Math.floor((100 - pickTimer) / 3))).join("|");
 		} else {
-			pickTimerElement.innerHTML = "";
+			pickTimer = 100;
 		}
+		setBarWidth(pickTimerElement, pickTimer);
 		updateDisplay();
 	}
 	window.requestAnimationFrame(tickFunction);
@@ -156,7 +167,7 @@ function displayAsset(asset) {
 		if (asset.count * asset.percentEach >= 50) {
 			percent = 100;
 		}
-		asset.progressElement.innerHTML = asset.activityText + " (" + asset.payoff + " kale): " + percent + "%";
+		setBarWidth(asset.barElement, percent);
 	}
 }
 

@@ -24,3 +24,16 @@ button {
 .content {
 	margin: 10px;
 }
+
+.bar {
+	display:inline-block;
+	height: 1em;
+	vertical-align: top;
+	border: 1px solid black;
+	background-color: grey;
+	margin: 10px;
+}
+
+.barLabel {
+	margin-bottom:0px;
+}

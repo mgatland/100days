@@ -8,6 +8,7 @@ var messagesElement = document.querySelector(".messages");
 var hint1 = false;
 var hint2 = false;
 var hint3 = false;
+var oldTick = undefined;
 
 document.querySelector(".gardenPick").addEventListener("click", function () {
 	if (pickTimer >= 100) {
@@ -103,26 +104,35 @@ function buyAsset(asset) {
 		addMessage(asset.buyMessageText);
 		asset.cost = Math.floor(asset.cost * 1.1);
 		setButtonText(asset);
+		asset.countElement.innerHTML = "You have " + asset.count + asset.pluralText;
 		asset.count++;
 	}
 	updateDisplay();
 }
 
 //tick
-setInterval(function () {
-	assets.forEach(tickAsset);
-	if (pickTimer < 100) {
-		pickTimer += 6;
-		pickTimerElement.innerHTML = Array(Math.max(1,Math.floor((100 - pickTimer) / 3))).join("|");
-	} else {
-		pickTimerElement.innerHTML = "";
+var tickFunction = function (timestamp) {
+	if (oldTick === undefined) oldTick = timestamp;
+	var ticks = Math.round((timestamp - oldTick) / 16);
+	console.log(ticks);
+	oldTick = oldTick + ticks * 16;
+	if (ticks > 0) {
+		assets.forEach(tickAsset, {ticks: ticks});
+		if (pickTimer < 100) {
+			pickTimer += 6 * ticks;
+			pickTimerElement.innerHTML = Array(Math.max(1,Math.floor((100 - pickTimer) / 3))).join("|");
+		} else {
+			pickTimerElement.innerHTML = "";
+		}
+		updateDisplay();
 	}
-	updateDisplay();
-}, 16)
+	window.requestAnimationFrame(tickFunction);
+}
+window.requestAnimationFrame(tickFunction);
 
 function tickAsset(asset) {
 	if (asset.count > 0) {
-		asset.progress += asset.count * asset.percentEach;
+		asset.progress += asset.count * asset.percentEach * this.ticks;
 		while (asset.progress > 100) {
 			asset.progress -= 100
 			total += asset.payoff;
@@ -142,7 +152,6 @@ function displayAsset(asset) {
 		asset.blockElement.classList.remove("hidden");
 	}
 	if (asset.count > 0) {
-		asset.countElement.innerHTML = "You have " + asset.count + asset.pluralText;
 		var percent = Math.floor(asset.progress);
 		if (asset.count * asset.percentEach >= 50) {
 			percent = 100;

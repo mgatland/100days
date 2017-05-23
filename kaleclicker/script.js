@@ -28,6 +28,7 @@ assets.push({
 : "You hired a seasonal worker.",
 	pluralText: " seasonal workers",
 	activityText: "Picking a leaf",
+	unlockText: "You can now hire seasonal workers!",
 	count: 0,//mutable
 	progress: 0,//mutable
 	payoff: 1,
@@ -42,6 +43,7 @@ assets.push({
 	buyMessageText: "You bought a Smoothie Machine",
 	pluralText: " Smoothie Machines",
 	activityText: "Mixing smoothies",
+	unlockText: "You can now buy Smoothie Machines!",
 	payoff: 20,
 	percentEach: 0.1,
 	//mutables:
@@ -57,6 +59,7 @@ assets.push({
 	buyMessageText: "You hired a trendy shirtsmith",
 	pluralText: " Shirtsmiths",
 	activityText: "Selling a kale shirt",
+	unlockText: "You can now hire shirtsmiths!",
 	payoff: 150,
 	percentEach: 0.05,
 	//mutables:
@@ -72,6 +75,7 @@ assets.push({
 	buyMessageText: "You hired a avocado architect",
 	pluralText: " architects",
 	activityText: "Designing an avocado house",
+	unlockText: "You can now hire avocado architects!",
 	payoff: 1000,
 	percentEach: 0.01,
 	//mutables:
@@ -161,6 +165,7 @@ function displayAsset(asset) {
 	if (!asset.unlocked && total >= asset.cost) {
 		asset.unlocked = true;
 		asset.blockElement.classList.remove("hidden");
+		addMessage(asset.unlockText);
 	}
 	if (asset.count > 0) {
 		var percent = Math.floor(asset.progress);

@@ -178,14 +178,15 @@ function addPlanet() {
 	planet.description = generatePlanetDescription()
 	planets.push(planet)
 	var random = Math.random();
-	if (random < 0.4 && tradeWorlds < 5) {
+	//always 2 tradeworlds, up to 5
+	if ((random < 0.3 && tradeWorlds < 5) || tradeWorlds < 2) {
 		tradeWorlds++
 		planet.type = "trade"
 		planet.items = []
 		planet.items.push(pickRandomAndRemove(allItems))
 		planet.items.push(pickRandomAndRemove(allItems))
 		planet.items.push(pickRandomAndRemove(allItems))
-		planet.trader = pickRandom(traders)
+		planet.trader = pickRandomAndRemove(traders)
 	} else {
 		planet.type = "item"
 		planet.item = pickRandomAndRemove(allItems)

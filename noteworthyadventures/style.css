@@ -20,7 +20,7 @@
 	border:1px solid black;
 	border-left: none;
 	vertical-align: top;
-	padding: 10px;
+	padding: 14px;
 }
 
 .hidden {
@@ -28,5 +28,53 @@
 }
 
 .info {
-	height: 250px;
+	height: 200px;
+}
+
+.heading {
+	font-size: 20px;
+}
+
+.readout {
+	font-size: 14px;
+	border: 1px solid black;
+	padding: 10px;
+}
+
+.event {
+	border: 1px solid black;
+	padding: 10px;
+	background-color: lightpink;
+}
+
+.good {
+	background-color: lightblue;
+}
+
+button {
+	display: block;
+	margin: 15px;
+	background-color: aliceblue;
+	border: 2px solid blue;
+	font-size:14px;
+}
+
+.inventory div {
+	display: block;
+	margin: 10px 15px;
+	background-color: aliceblue;
+	border: 2px solid blue;
+	font-size:14px;
+	padding: 2px 10px;
+	border-radius: 7px;
+}
+
+body {
+	font-family: monospace;
+}
+
+h4 {
+	font-family: monospace;
+	font-size:20px;
+	margin-top: 0px;
 }

@@ -2,6 +2,7 @@
 var canvas = document.querySelector(".gameCanvas")
 var ctx = canvas.getContext('2d')
 var eventEl = document.querySelector(".event")
+var eventTextEl = document.querySelector(".eventText")
 var eventButtonEl = document.querySelector(".eventButton")
 var inventoryEl = document.querySelector(".inventory")
 ctx.webkitImageSmoothingEnabled = false;
@@ -226,11 +227,17 @@ function showPlanetInfo() {
 	document.querySelector(".locationName").innerHTML = ship.target.name
 	document.querySelector(".locationDescription").innerHTML = ship.target.description
 	if (ship.target.type === "item") {
-		eventEl.innerHTML = "Captain, we found something!"
+		eventEl.classList.add("good")
+		eventTextEl.innerHTML = "Captain, we found something!"
 		eventButtonEl.innerHTML = "Take the " + ship.target.item.name
 		eventButtonEl.classList.remove("hidden")
+	} else if (ship.target.type === "searched") {
+		eventEl.classList.add("good")
+		eventTextEl.innerHTML = "We've searched this planet."
+		eventButtonEl.classList.add("hidden")
 	} else {
-		eventEl.innerHTML = "There's nothing much here."
+		eventEl.classList.remove("good")
+		eventTextEl.innerHTML = "There's nothing much here."
 		eventButtonEl.classList.add("hidden")
 	}
 	
@@ -244,7 +251,7 @@ function hidePlanetInfo() {
 function showInventory() {
 	inventoryEl.innerHTML = ""
 	ship.items.forEach(function (item) {
-		var itemEl = document.createElement("li")
+		var itemEl = document.createElement("div")
 		itemEl.innerHTML = item.name
 		inventoryEl.appendChild(itemEl)
 	})
@@ -254,7 +261,7 @@ eventButtonEl.addEventListener("click", function (event) {
 	if (ship.target.type === "item") {
 		ship.items.push(ship.target.item)
 		ship.target.item = undefined
-		ship.target.type = "empty"
+		ship.target.type = "searched"
 		showPlanetInfo()
 		showInventory()
 	}

@@ -5,6 +5,11 @@ var eventEl = document.querySelector(".event")
 var eventTextEl = document.querySelector(".eventText")
 var eventButtonEl = document.querySelector(".eventButton")
 var inventoryEl = document.querySelector(".inventory")
+
+var traderItem0 = document.querySelector(".traderItems .t0")
+var traderItem1 = document.querySelector(".traderItems .t1")
+var traderItem2 = document.querySelector(".traderItems .t2")
+
 ctx.webkitImageSmoothingEnabled = false;
 ctx.mozImageSmoothingEnabled = false;
 ctx.imageSmoothingEnabled = false;
@@ -35,7 +40,7 @@ var planetSprites = [
 var planetNames = ["Earth", "Medusa", "Argon", "Ewaste", 
 "Trailer", "Music", "Game", "Mercurious", "Venux", 
 "Eart", "Mart", "Juperella", "Saturdine", "Ureally", 
-"Neptellia", "Pollon"
+"Neptellia", "Pollon", "ES1334", "NR0184"
 ]
 
 //game stuff
@@ -53,43 +58,98 @@ var ship = {
 	warpTime: 0,
 	items: []
 }
-
+var buyChoice = -1
+var sellChoice = -1
+var gameOver = false
+var tradeWorlds = 0 //limited to 5 or we run out of items and crash
 
 var allItems = []
-allItems.push({name: "Warp Coil", value: 1})
-allItems.push({name: "Space Medicine", value: 1})
-allItems.push({name: "Alien Goop", value: 1})
-allItems.push({name: "Illegal Weapons", value: 1})
-allItems.push({name: "Broken Time Machine", value: 1})
-allItems.push({name: "Long-range Torpedoes", value: 1})
-allItems.push({name: "Memento from the Original Series", value: 1})
-allItems.push({name: "Rare Meats", value: 1})
-allItems.push({name: "Exotic Meats", value: 1})
-allItems.push({name: "Cassette Tape", value: 1})
-allItems.push({name: "LiPo Batteries (volatile)", value: 1})
+allItems.push({name: "Warp Coil", values: ["advanced", "shiny"]})
+allItems.push({name: "Space Medicine", values: ["advanced", "practical"]})
+allItems.push({name: "Alien Eyeballs", values: ["gross", "exotic"]})
+allItems.push({name: "Inside-Out Gas", values: ["weapons", "gross"]})
+allItems.push({name: "Rusty Broken Time Machine", values: ["advanced", "vintage"]})
+allItems.push({name: "Long-range Torpedoes", values: ["advanced", "shiny", "weapons"]})
+allItems.push({name: "Memento from the Original Series", values: ["exotic", "vintage"]})
+allItems.push({name: "Gross Meats", values: ["gross", "practical"]})
+allItems.push({name: "Exotic Meats", values: ["exotic", "practical"]})
+allItems.push({name: "Cassette Tape", values: ["vintage", "exotic"]})
+allItems.push({name: "LiPo Batteries (volatile)", values: ["practical", "weapons"]})
+allItems.push({name: "Classic Car", values: ["vintage", "practical", "shiny"]})
+allItems.push({name: "Catapault", values: ["vintage", "weapons"]})
+allItems.push({name: "Alien Soldier", values: ["exotic", "weapons"]})
+allItems.push({name: "Sheet of Tinfoil", values: ["shiny"]})
+allItems.push({name: "Huge Solar Panel", values: ["shiny", "practical"]})
+allItems.push({name: "Jar of Robot Millipedes", values: ["gross", "shiny"]})
+allItems.push({name: "Lots of Fake Blood", values: ["gross"]})
+allItems.push({name: "Laser Rifles", values: ["weapons","practical"]})
+allItems.push({name: "The Art of Subspace Cryptography (book)", values: ["advanced"]})
+allItems.push({name: "Giant Crab Claw", values: ["gross", "exotic"]})
+allItems.push({name: "Ancient Human Skeletons", values: ["vintage","gross"]})
+allItems.push({name: "Assorted Power Tools", values: ["practical"]})
+allItems.push({name: "Bionic Prosthetic Arm", values: ["practical", "advanced"]})
+allItems.push({name: "Trazerian Glass Slippers", values: ["exotic", "shiny"]})
+allItems.push({name: "Nanofibre Dress (3 Outfits In One!)", values: ["advanced", "shiny"]})
+allItems.push({name: "Mysterious Egg", values: ["exotic"]})
+allItems.push({name: "Last Survivor of an Ancient Race", values: ["vintage","exotic"]})
+allItems.push({name: "Orb of Everlasting Pizza", values: ["advanced", "gross", "practical"]})
 
+var traders = []
+traders.push({name:"violent society",values:["weapons"]})
+traders.push({name:"Technomancers",values:["advanced"]})
+traders.push({name:"Magpierians",values:["shiny"]})
+traders.push({name:"historians",values:["vintage"]})
+traders.push({name:"frontier settlers",values:["practical"]})
+traders.push({name:"Space Boys",values:["gross"]})
+traders.push({name:"space tourists",values:["exotic"]})
+
+var values = ["weapons", "advanced", "shiny", "vintage", "practical", "gross", "exotic"]
 var timeLeft = 5 * 365 - 1;
 var planets = []
 for (var i = 0; i < 10; i++) {addPlanet()}
+console.log("trade worlds: " + tradeWorlds)
 
 var selectedPlanet = null
+var missionGoal = pickRandom(values)
+
+function endGame() {
+	if (gameOver) return;
+	gameOver = true
+	document.querySelector(".planetInfo").classList.add("hidden")
+	document.querySelector(".travelInfo").classList.add("hidden")	
+	document.querySelector(".endInfo").classList.remove("hidden")
+	var goodItems = ship.items.filter(x => x.values.includes(missionGoal))
+	var badItems = ship.items.filter(x => !x.values.includes(missionGoal))
+	var message = "Your mission is over! You found " 
+	+ goodItems.length + " items of interest to the federation."
+	if (badItems.length > 1) message += " The other " + badItems.length + " will be thrown in the space trash, especially the " + badItems[0].name + "!"
+	if (badItems.length == 1) message += " As for the " + badItems[0].name + ", that goes in the space trash!"
+	document.querySelector(".endInfo .message").innerHTML = message
+}
 
 function tickGame() {
+	if (gameOver) return;
 	//gameplay
 	if (ship.isInWarp)
 	{
 		ship.warpTime++
-		timeLeft -= 1
-		ship.speed = Math.min(ship.speed + ship.acceleration, ship.maxSpeed)
-		var turnSpeed = 0.05 + Math.max(0, ship.warpTime-60*1.5) * 0.001
-		var angle = angleTo(ship.pos, ship.target.pos)
-		ship.pos.angle = turnTowards(ship.pos.angle, angle, turnSpeed);
-		moveAtAngle(ship.pos, ship.speed, ship.pos.angle)
-		var dist = distance(ship.pos, ship.target.pos)
-		if (dist < 4) {
-			ship.isInWarp = false
-			ship.landed = true
-			showPlanetInfo()
+		timeLeft -= 2.5
+		if (timeLeft <= 0) {
+			timeLeft = 0
+			endGame()
+		} else {
+			ship.speed = Math.min(ship.speed + ship.acceleration, ship.maxSpeed)
+			var turnSpeed = 0.05 + Math.max(0, ship.warpTime-60*1.5) * 0.001
+			var angle = angleTo(ship.pos, ship.target.pos)
+			ship.pos.angle = turnTowards(ship.pos.angle, angle, turnSpeed);
+			moveAtAngle(ship.pos, ship.speed, ship.pos.angle)
+			var dist = distance(ship.pos, ship.target.pos)
+			if (dist < 4) {
+				ship.isInWarp = false
+				ship.landed = true
+				showInventory(true)
+				showPlanetInfo()
+			}
 		}
 	}
 
@@ -118,16 +178,35 @@ function addPlanet() {
 	planet.description = generatePlanetDescription()
 	planets.push(planet)
 	var random = Math.random();
-	if (random < 0.33) {
+	if (random < 0.4 && tradeWorlds < 5) {
+		tradeWorlds++
 		planet.type = "trade"
 		planet.items = []
 		planet.items.push(pickRandomAndRemove(allItems))
 		planet.items.push(pickRandomAndRemove(allItems))
 		planet.items.push(pickRandomAndRemove(allItems))
+		planet.trader = pickRandom(traders)
 	} else {
 		planet.type = "item"
 		planet.item = pickRandomAndRemove(allItems)
 	}
+}
+
+//ONLY called by showInventory
+function prepareForTrading(onPlanet) {
+	var trader = onPlanet ? ship.target.trader : null
+	ship.items.forEach(function (item) {
+		item.apparentValue = false;
+		if (trader != null) {
+			trader.values.forEach(function (value) {
+				if (item.values.includes(value)) item.apparentValue = true
+			})
+		}
+	});
+}
+
+function playerCanTrade() {
+	return ship.items.filter(x => x.apparentValue).length > 0
 }
 
 //drawing
@@ -176,12 +255,12 @@ function pickRandom(list) {
 function pickRandomAndRemove(list) {
 	var i = Math.floor(Math.random() * list.length)
 	var pick = list[i]
-	//list.splice(i, 1) fixme we don't remove
+	list.splice(i, 1)
 	return pick
 }
 
 function timeLeftInDays() {
-	return Math.round((timeLeft * 10)) / 10;
+	return Math.floor(timeLeft);
 }
 
 function distance(one, two) {
@@ -226,15 +305,39 @@ function showPlanetInfo() {
 	document.querySelector(".travelInfo").classList.add("hidden")
 	document.querySelector(".locationName").innerHTML = ship.target.name
 	document.querySelector(".locationDescription").innerHTML = ship.target.description
+	document.querySelector(".traderItems").classList.add("hidden")
 	if (ship.target.type === "item") {
 		eventEl.classList.add("good")
 		eventTextEl.innerHTML = "Captain, we found something!"
 		eventButtonEl.innerHTML = "Take the " + ship.target.item.name
 		eventButtonEl.classList.remove("hidden")
+		eventButtonEl.disabled = false
+		document.querySelector(".traderItems").classList.add("hidden")
 	} else if (ship.target.type === "searched") {
 		eventEl.classList.add("good")
 		eventTextEl.innerHTML = "We've searched this planet."
 		eventButtonEl.classList.add("hidden")
+		document.querySelector(".traderItems").classList.add("hidden")
+	} else if (ship.target.type === "trade") {
+		eventEl.classList.add("good")
+		document.querySelector(".traderItems").classList.remove("hidden")
+		traderItem0.innerHTML = ship.target.items[0].name
+		traderItem1.innerHTML = ship.target.items[1].name
+		traderItem2.innerHTML = ship.target.items[2].name
+		traderItem0.classList.remove("chosen")
+		traderItem1.classList.remove("chosen")
+		traderItem2.classList.remove("chosen")
+		buyChoice = -1
+		//show planet items
+		if (playerCanTrade()) {
+			eventTextEl.innerHTML = "The " + ship.target.trader.name + " want to trade. Choose two items to swap, if you're keen!"
+			eventButtonEl.classList.remove("hidden")
+			eventButtonEl.innerHTML = "Trade"
+			updateTradeButton()
+		} else {
+			eventTextEl.innerHTML = "The " + ship.target.trader.name + " want to trade, but they don't like anything we have at the moment."
+			eventButtonEl.classList.add("hidden")
+		}
 	} else {
 		eventEl.classList.remove("good")
 		eventTextEl.innerHTML = "There's nothing much here."
@@ -243,27 +346,94 @@ function showPlanetInfo() {
 	
 }
 
+traderItem0.addEventListener("click", function (e) {
+	buyChoice = 0;
+	traderItem0.classList.add("chosen")
+	traderItem1.classList.remove("chosen")
+	traderItem2.classList.remove("chosen")
+	updateTradeButton()
+});
+
+traderItem1.addEventListener("click", function (e) {
+	buyChoice = 1;
+	traderItem0.classList.remove("chosen")
+	traderItem1.classList.add("chosen")
+	traderItem2.classList.remove("chosen")
+	updateTradeButton()
+});
+
+traderItem2.addEventListener("click", function (e) {
+	buyChoice = 2;
+	traderItem0.classList.remove("chosen")
+	traderItem1.classList.remove("chosen")
+	traderItem2.classList.add("chosen")
+	updateTradeButton()
+});
+
+function updateTradeButton() {
+	if (buyChoice >= 0 && sellChoice >= 0) {
+		eventButtonEl.innerHTML = "Trade"
+		eventButtonEl.disabled = false
+	} else if (buyChoice >= 0) {
+		eventButtonEl.innerHTML = "Choose what to offer"
+		eventButtonEl.disabled = true
+	} else {
+		eventButtonEl.innerHTML = "Choose what you want"
+		eventButtonEl.disabled = true
+	}
+}
+
 function hidePlanetInfo() {
 	document.querySelector(".planetInfo").classList.add("hidden")
 	document.querySelector(".travelInfo").classList.remove("hidden")
+	document.querySelector(".locationName").innerHTML = "deep space"
 }
 
-function showInventory() {
+function showInventory(onPlanet) {
+	prepareForTrading(onPlanet)
 	inventoryEl.innerHTML = ""
+	var n = 0
 	ship.items.forEach(function (item) {
 		var itemEl = document.createElement("div")
 		itemEl.innerHTML = item.name
+		itemEl.classList.add("t"+n++)
+		if (!item.apparentValue) itemEl.classList.add("unwanted")
 		inventoryEl.appendChild(itemEl)
 	})
 }
+
+inventoryEl.addEventListener("click", function (event) {
+	if (ship.target.type==="trade") {
+		for (var i = 0; i < ship.items.length; i++) {
+			if (event.target.classList.contains("t"+i) && ship.items[i].apparentValue) {
+				sellChoice = i
+				var elems = document.querySelectorAll(".inventory div");
+				[].forEach.call(elems, function(el) {
+				    el.classList.remove("chosen");
+				});
+				event.target.classList.add("chosen")
+			}
+		}
+		updateTradeButton()
+	}
+})
 
 eventButtonEl.addEventListener("click", function (event) {
 	if (ship.target.type === "item") {
 		ship.items.push(ship.target.item)
 		ship.target.item = undefined
 		ship.target.type = "searched"
+		showInventory(true)
 		showPlanetInfo()
-		showInventory()
+	}
+	if (ship.target.type === "trade" && buyChoice >= 0 && sellChoice >= 0) {
+		ship.items.push(ship.target.items[buyChoice])
+		ship.target.items[buyChoice] = ship.items[sellChoice]
+		ship.items.splice(sellChoice, 1)
+		buyChoice = -1
+		sellChoice = -1
+		showInventory(true)
+		showPlanetInfo()
 	}
 })
 
@@ -288,7 +458,17 @@ canvas.addEventListener("click", function (event) {
 })
 
 //startup
-ship.items.push(pickRandomAndRemove(allItems))
-ship.items.push(pickRandomAndRemove(allItems))
-showInventory()
+
+//starting items - can't be the items you're looking for
+for (var i = 0; i < 2; i++) {
+	var pick = pickRandomAndRemove(allItems)
+	while (pick.values.includes(missionGoal)) {
+		allItems.push(pick) //give it back
+		pick = pickRandomAndRemove(allItems)
+	}
+	ship.items.push(pick)
+}
+showInventory(false)
 hidePlanetInfo()
+document.querySelector(".goal").innerHTML = missionGoal
+document.querySelector(".goal2").innerHTML = missionGoal

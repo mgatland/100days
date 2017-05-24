@@ -1,6 +1,7 @@
 "use strict"
 
 var vowels = ['a','e','i','o','u']
+var mainMenu = []
 
 var thanks = [
 "Thank you!",
@@ -36,6 +37,7 @@ var doubleOrderStarters = [
 ]
 
 var breakfast = [
+{name:"BACK", link: mainMenu},
 {name:"porridge", price:9.5, prefix: "some"},
 {name:"banana bread", price:3.5, prefix: "some"},
 {name:"soft boiled eggs", price:12, prefix: "some"},
@@ -46,6 +48,7 @@ var breakfast = [
 ]
 
 var burgers = [
+{name:"BACK", link: mainMenu},
 {name:"beef burger", price:12.5},
 {name:"chicken burger", price:11.5},
 {name:"pork burger", price:12.5},
@@ -56,6 +59,7 @@ var burgers = [
 ]
 
 var sides = [
+{name:"BACK", link: mainMenu},
 {name:"egg", price:3, error: " (breakfast side)"},
 {name:"tomato", price:3},
 {name:"truffle", price:8},
@@ -66,6 +70,7 @@ var sides = [
 ]
 
 var extras = [
+{name:"BACK", link: mainMenu},
 {name:"swiss cheese", price:3, prefix: "some"},
 {name:"pineapple", price:3, prefix: "some"},
 {name:"fried egg", price:3},
@@ -75,7 +80,8 @@ var extras = [
 {name:"beetroot", price:3, prefix: "some"}
 ]
 
-var drinks = [//a
+var drinks = [
+{name:"BACK", link: mainMenu},
 {name:"flat white", price:4.5},
 {name:"long black", price:4.5},
 {name:"soy flat white", price:4.5},
@@ -87,6 +93,7 @@ var drinks = [//a
 
 
 var editMenu = [
+{name:"BACK", link: mainMenu},
 {name:"Delete item 1", delete: 1},
 {name:"Delete item 2", delete: 2},
 {name:"Delete item 3", delete: 3},
@@ -96,15 +103,13 @@ var editMenu = [
 {name:"Delete item 7", delete: 6},
 ]
 
-var mainMenu = [
-{name:"breakfast", link:breakfast},
-{name:"burgers", link:burgers},
-{name:"drinks", link:drinks},
-{name:"sides", link:sides},
-{name:"extras", link:extras},
-{name:"CONFIRM", confirm:true},
-{name:"Edit", link:editMenu}
-]
+mainMenu.push({name:"breakfast", link:breakfast})
+mainMenu.push({name:"burgers", link:burgers})
+mainMenu.push({name:"drinks", link:drinks})
+mainMenu.push({name:"sides", link:sides})
+mainMenu.push({name:"extras", link:extras})
+mainMenu.push({name:"CONFIRM", confirm:true})
+mainMenu.push({name:"Edit", link:editMenu})
 
 var resultMenu = [{name:"Next", next:true}]
 var badResultMenu = [{name:"I'm sorry", next:true}]
@@ -130,7 +135,7 @@ var ordering = false
 var correctOrders = 0
 var failedOrders = 0
 var totalOrders = 0
-var customers = 10
+var customers = 9
 var averageSpeeds = []
 
 var optionsEl = document.querySelector(".options")
@@ -144,10 +149,6 @@ optionsEl.addEventListener("click", function (event) {
 	var selection = currentMenu[index]
 	console.log("click " + index + " " + selection.name)
 	if (selection.link != undefined) {
-		//hack in the back links
-		if (selection.name != "BACK" && selection.link[0].name != "BACK") {
-			selection.link.unshift({name:"BACK", link: currentMenu})
-		}
 		showMenu(selection.link)
 	}
 	if (selection.price != undefined) {
@@ -242,7 +243,7 @@ function addBurger(){
 }
 
 function addFries() {
-	var fries = burgers[4] //such a hack
+	var fries = burgers[5] //such a hack
 	expectedOrder.push(fries)
 	txt += " and "
 	txt += addWords(fries)
@@ -250,7 +251,7 @@ function addFries() {
 }
 
 function addFriesx2() {
-	var fries = burgers[4] //such a hack
+	var fries = burgers[5] //such a hack
 	expectedOrder.push(fries)
 	expectedOrder.push(fries)
 	txt += " and two lots of fries"
@@ -395,7 +396,7 @@ function showScores() {
 }
 
 function getAverageSpeed() {
-	if (averageSpeeds.length == 0) return 0
+	if (averageSpeeds.length == 0 || correctOrders === 0) return 0
 	var total = averageSpeeds.reduce(( acc, cur ) => acc + cur, 0);
 	return Math.ceil(total / correctOrders)
 }

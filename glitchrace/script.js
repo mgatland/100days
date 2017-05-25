@@ -121,7 +121,7 @@ cars.push({x:playerCar.x-3, y:playerCar.y,sprite:carSprite0})
 cars.push({x:playerCar.x+2, y:playerCar.y,sprite:carSprite0})
 //cars.push({x:playerCar.x+3, y:playerCar.y,sprite:carSprite1})
 var state = {name:"playerChoose"}
-
+var playerWon = false
 
 function getRandomCard() {
 	return Math.floor(Math.random() * cardTypeCount)
@@ -157,7 +157,7 @@ function tickGame() {
 				state.car = 0
 				state.name = "playerChoose"
 				if (playerCar.dead) {
-					state = "gameover"
+					state.name = "gameover"
 				}
 			} else {
 				cars[state.car].selected = true
@@ -239,6 +239,7 @@ function moveCar(car, x, y, powered) {
 
 	if (car.y === 0) {
 		state.name = "gameover"
+		if (car === playerCar) playerWon = true
 	}
 }
 
@@ -301,7 +302,7 @@ function draw() {
 		ctx.strokeStyle = "white"
 		ctx.textAlign = "center"
 		ctx.font = "40px monospace"
-		ctx.strokeText("GAME OVER", width/2, height/2)
+		ctx.strokeText(playerWon ? "WINNER" : "GAME OVER", width/2, height/2)
 	}
 	effects.forEach(function (effect) {
 		drawGridSprite(effect, effectSprite)

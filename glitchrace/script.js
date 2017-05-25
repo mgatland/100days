@@ -101,7 +101,7 @@ var coneSprite = {x:56, y:28, width:9, height:10}
 // Game stuff
 var effects = []
 var cars = []
-var cardTypeCount = 6
+var cardTypeCount = 7
 var cones = []
 for (var i = 0; i < 2; i++) {
 	cones.push({
@@ -174,12 +174,13 @@ function tickGame() {
 	draw()
 }
 
-var crashForward = 0
+var teleWide = 0
 var leftForward = 1
 var rightForward = 2
 var crashLeft = 3
 var forwardForward = 4
 var crashRight = 5
+var teleFar = 6
 
 var animStep = 20
 function playAction() {
@@ -189,11 +190,21 @@ function playAction() {
 		state.nextCar = true
 		return
 	}
-	if (car.action === crashForward) {
+	if (car.action === teleWide) {
 		if (state.frame === animStep) {
-			destroyAt(car, -1, -1)
-			destroyAt(car, +1, -1)
-			moveCar(car, 0, -1, true)
+			car.canTeleswap = true
+			teleSwap(car, car.x, car.y - 1)
+			teleSwap(car, car.x-1, car.y - 1)
+			teleSwap(car, car.x+1, car.y - 1)
+		}
+		if (state.frame === animStep*2) state.nextCar = true
+	}
+	if (car.action === teleFar) {
+		if (state.frame === animStep) {
+			car.canTeleswap = true
+			for (var y = 0; y < car.y; y++) {
+				teleSwap(car, car.x, y)
+			}
 		}
 		if (state.frame === animStep*2) state.nextCar = true
 	}
@@ -243,10 +254,15 @@ function moveCar(car, x, y, powered) {
 	}
 }
 
-function destroyAt(car, x, y) {
-	var other = cars.filter(c => c != car && c.x === car.x+x && c.y === car.y+y && !c.dead)[0]
-	if (other) other.dead = true
-	effects.push({x:car.x + x, y:car.y + y, age:0})
+function teleSwap(car, x, y) {
+	var other = cars.filter(c => c.x === x && c.y === y && !c.dead)[0]
+	if (other) {
+		other.x = car.x
+		car.x = x
+		other.y = car.y
+		car.y = y
+	}
+	effects.push({x:x, y:y, age:0})
 }
 
 function moveFail(car, x, y) {

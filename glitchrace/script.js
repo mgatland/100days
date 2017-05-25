@@ -131,12 +131,6 @@ function playerAction(index) {
 	if (state.name === "playerChoose") {
 		playerCar.action = cards[index]
 		cards[index] = getRandomCard()
-		cars.forEach(function (car) {
-			if (car != playerCar) {
-				//ai goes here...
-				car.action = getRandomCard()
-			}
-		})
 		state.name = "action"
 		state.car = 0
 		cars[state.car].selected = true
@@ -160,10 +154,17 @@ function tickGame() {
 					state.name = "gameover"
 				}
 			} else {
-				cars[state.car].selected = true
-				cars[state.car].failed = false
+				var car = cars[state.car]
+				car.selected = true
+				car.failed = false
 				state.frame = 0
 				state.nextCar = false
+				if (car != playerCar) {
+					car.action = getRandomCard()
+					while (!isActionUseful(car, car.action)) {
+						car.action = getRandomCard()
+					}
+				}
 			}
 		}
 	}
@@ -232,6 +233,26 @@ function playAction() {
 	}
 }
 
+function isActionUseful(car, action) {
+	if (action === teleWide) {
+		return (cars.some(c => c.y === car.y - 1 && c.x >= car.x - 1 && c.x <= car.x + 1))
+	}
+	if (action === teleFar) {
+		return (cars.some(c => c.x === car.x && c.y < car.y))	
+	}
+	if (car.action === crashLeft) {
+		return car.x > 0 //don't handle traffic cones
+	}
+	if (car.action === crashRight) {
+		return car.x > gridX - 1 //don't handle traffic cones
+	}
+	if (car.action === forwardForward) {
+		return (!cars.some(c => c.x === car.x && c.y === car.y - 1))
+	}
+	//don't handle diagonals at all
+	return true
+}
+
 function moveCar(car, x, y, powered) {
 	car.failed = false
 	car.x += x
@@ -241,7 +262,7 @@ function moveCar(car, x, y, powered) {
 	if (cones.some(c => c.x === car.x &&  c.y === car.y)) moveFail(car, x, y)
 	if (cars.some(c => c != car && c.x === car.x && c.y === car.y && !c.dead)) {
 		if (powered) {
-			var other = cars.filter(c => c != car && c.x === car.x && c.y === car.y && !c.dead)[0]
+			var other = cars.find(c => c != car && c.x === car.x && c.y === car.y && !c.dead)
 			other.dead = true
 		} else {
 			moveFail(car, x, y)
@@ -255,12 +276,16 @@ function moveCar(car, x, y, powered) {
 }
 
 function teleSwap(car, x, y) {
-	var other = cars.filter(c => c.x === x && c.y === y && !c.dead)[0]
-	if (other) {
-		other.x = car.x
-		car.x = x
-		other.y = car.y
-		car.y = y
+	if (car.canTeleswap) {
+		var other = cars.find(c => c.x === x && c.y === y && !c.dead)
+		if (other) {
+			other.x = car.x
+			car.x = x
+			other.y = car.y
+			car.y = y
+			//only first teleport happens
+			car.canTeleswap = false
+		}
 	}
 	effects.push({x:x, y:y, age:0})
 }

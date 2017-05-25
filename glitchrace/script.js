@@ -108,7 +108,10 @@ for (var i = 0; i < 2; i++) {
 		x:Math.floor(Math.random() * gridX),
 		y:Math.floor(Math.random() * 2 + 2)})
 }
-var cards = [getRandomCard(), getRandomCard(), getRandomCard(), getRandomCard()]
+var cards = []
+for (var i = 0; i < 4; i++) {
+	cards.push(getRandomCardForPlayer())
+}
 var playerCar = {
 	x: Math.floor(gridX/2), 
 	y: gridY - 1,
@@ -127,10 +130,17 @@ function getRandomCard() {
 	return Math.floor(Math.random() * cardTypeCount)
 }
 
+function getRandomCardForPlayer() {
+	var card = getRandomCard()
+	//don't allow duplicates. Isn't that generous!
+	while (cards.filter(x => x === card).length > 0) card = getRandomCard()
+	return card
+}
+
 function playerAction(index) {
 	if (state.name === "playerChoose") {
 		playerCar.action = cards[index]
-		cards[index] = getRandomCard()
+		cards[index] = getRandomCardForPlayer()
 		state.name = "action"
 		state.car = 0
 		cars[state.car].selected = true

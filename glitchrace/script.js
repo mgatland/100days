@@ -204,17 +204,21 @@ function playAction() {
 	if (car.action === teleWide) {
 		if (state.frame === animStep) {
 			car.canTeleswap = true
-			teleSwap(car, car.x, car.y - 1)
-			teleSwap(car, car.x-1, car.y - 1)
-			teleSwap(car, car.x+1, car.y - 1)
+			var x = car.x
+			var y = car.y
+			teleSwap(car, x, y - 1)
+			teleSwap(car, x-1, y - 1)
+			teleSwap(car, x+1, y - 1)
 		}
 		if (state.frame === animStep*2) state.nextCar = true
 	}
 	if (car.action === teleFar) {
 		if (state.frame === animStep) {
 			car.canTeleswap = true
-			for (var y = 0; y < car.y; y++) {
-				teleSwap(car, car.x, y)
+			var x = car.x
+			var yEnd = car.y
+			for (var y = 0; y < yEnd; y++) {
+				teleSwap(car, x, y)
 			}
 		}
 		if (state.frame === animStep*2) state.nextCar = true

@@ -12,8 +12,7 @@ var thanks = [
 "Yes that's correct.",
 "Yes thankyou.",
 "Cool.",
-"Well done! No mistakes that time -- your boss",
-"Correct, well done -- your boss",
+"I hope it comes faster than last week."
 ]
 
 var orderStarters = [
@@ -110,11 +109,12 @@ mainMenu.push({name:"sides", link:sides})
 mainMenu.push({name:"extras", link:extras})
 mainMenu.push({name:"CONFIRM", confirm:true})
 mainMenu.push({name:"Edit", link:editMenu})
+mainMenu.push({name:""})
 
 var resultMenu = [{name:"Next", next:true}]
 var badResultMenu = [{name:"I'm sorry", next:true}]
 
-for (var i = 0; i < 6; i++) {
+for (var i = 0; i < 7; i++) {
 	resultMenu.push({name:"", next:true})
 	badResultMenu.push({name:"", next:true})
 	}
@@ -324,7 +324,7 @@ function showOrder() {
 	orderEl.innerHTML = ""
 	order.forEach(function (item) {
 		var el = document.createElement("div")
-		//el.classList.add("option")
+		el.classList.add("orderItem")
 		el.innerHTML = item.name + " - $" + item.price
 		orderEl.appendChild(el)
 	})	
@@ -366,18 +366,28 @@ function confirmOrder() {
 	totalOrders++
 	averageSpeeds.push(timer)
 	timer = 0
+	var averageSpeed = getAverageSpeed()
 	if (customers - totalOrders == 0) {
-		message += "<br>That's the end of your shift."
+		message += "<br>----<br>That's the end of your shift."
 		if (failedOrders > 1) {
-			message += " You need to make less mistakes next time!"
-		} else {
-			message += "Your average speed was " + getAverageSpeed() + " seconds"
-			if (getAverageSpeed() < 10) {
-				message += " which is pretty good!"
-			} else if (getAverageSpeed() < 13) {
-				message += " which is ok for a beginner."
+			message += " You need to make less mistakes next time! "
+		}
+		if (failedOrders < totalOrders / 2) {
+			message += "Your average speed was " + averageSpeed + " seconds"
+			if (averageSpeed <= 11) {
+				message += "! You're a pro. You could show me a thing or two!"
+			} else if (averageSpeed <= 13) {
+				message += " which is great! You're faster than most of the other staff!"
+			} else if (averageSpeed <= 15) {
+				message += " which is great! You're keeping up with some of our experienced staff."
+			} else if (averageSpeed <= 17) {
+				message += " which is pretty good - for a beginner. Nice job."
+			} else if (averageSpeed <= 20) {
+				message += " which is ok for a beginner! Well done."
+			} else if (averageSpeed <= 30) {
+				message += " which is ok for a beginner, but you need to work harder."
 			} else {
-				message += " which is not good enough."
+				message += " which is not good enough! I expect big improvements."
 			}
 		}
 		showMenu(endMenu)	

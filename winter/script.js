@@ -23,9 +23,9 @@ var iconScale = 4
 var margin = 20
 var gridXLength = 6
 var gridYLength = 6
-var gameheight = width //force to square
+var gameHeight = width //force to square
 var cellWidth = width / gridXLength
-var cellHeight = gameheight / gridYLength
+var cellHeight = gameHeight / gridYLength
 var buttonWidth = (width - margin * 4) / 3
 var buttonHeight = 100
 
@@ -50,7 +50,7 @@ function drawIcon(x, y, index) {
 
 function drawGridSprite(pos, sprite, xOff=0, yOff=0) {
 	var x = (pos.x + 0.5 + xOff) * width / gridXLength
-	var y = (pos.y + 0.5 + yOff) * gameheight / gridYLength
+	var y = (pos.y + 0.5 + yOff) * gameHeight / gridYLength
 	ctx.translate(x, y)
 	ctx.rotate(pos.angle || 0)
 	ctx.drawImage(spriteImage, 
@@ -273,11 +273,11 @@ function draw() {
 	ctx.beginPath();
 	for (var x = 0; x < gridXLength + 1; x++) {
 		ctx.moveTo(x*width / gridXLength, 0)
-		ctx.lineTo(x*width / gridXLength, gameheight)
+		ctx.lineTo(x*width / gridXLength, gameHeight)
 	}
 	for (var y = 0; y < gridYLength + 1; y++) {
-		ctx.moveTo(0, y*gameheight / gridYLength)
-		ctx.lineTo(width, y*gameheight / gridYLength)
+		ctx.moveTo(0, y*gameHeight / gridYLength)
+		ctx.lineTo(width, y*gameHeight / gridYLength)
 	}
 	ctx.stroke()
 
@@ -304,7 +304,8 @@ function draw() {
 					ctx.fillText("left", (x+0.37)*cellWidth, (y+0.92)*cellHeight)
 				} else {
 					ctx.fillStyle = "black"
-					ctx.fillText(ft.produces + " " + ft.name, (x+0.37)*cellWidth, (y+0.8)*cellHeight)
+					var amount = (ft.produces > 1) ? ft.produces + " " : ""
+					ctx.fillText(amount + ft.name, (x+0.37)*cellWidth, (y+0.8)*cellHeight)
 					ctx.fillText("ready", (x+0.37)*cellWidth, (y+0.92)*cellHeight)
 				}
 			} else if (room.dirt) {
@@ -333,13 +334,15 @@ function draw() {
 		ctx.fillText("Click on a room", 10, height - 75)	
 	} else if (selected.x === player.x && selected.y === player.y) {
 		if (selected.blocked || selected.ants) {
-			buttons[0].line1 = "get trapped"
-			buttons[0].line2 = "(end game)"
-			buttons[0].action = "lose"
-			drawButton(buttons[0])
+			if (!canPlayerMove()) {
+				buttons[0].line1 = "Give up"
+				buttons[0].line2 = "(I'm stuck!)"
+				buttons[0].action = "lose"
+				drawButton(buttons[0])
+			}
 		} else {
 			if (blockers > 0) {
-				buttons[0].line1 = "Block room"
+				buttons[0].line1 = "Build trap"
 				buttons[0].line2 = "(1 day)"
 				buttons[0].action = "block"
 				drawButton(buttons[0])			
@@ -384,14 +387,14 @@ function draw() {
 		drawButton(buttons[0])
 	}
 
-	if (state === "end") {
-		ctx.font = "40px monospace"
+	if (state === "end" || true) {
+		ctx.font = "40px bold monospace"
 		ctx.textAlign = "center"
-		ctx.fillStyle = "orange"
+		ctx.fillStyle = "white"
 		ctx.strokeStyle = "black"
-		ctx.lineWidth = 1
-		ctx.fillText(endMessage, width / 2, height / 2)
-		ctx.strokeText(endMessage, width / 2, height / 2)
+		ctx.lineWidth = 5
+		ctx.strokeText(endMessage, width / 2, gameHeight + 50)
+		ctx.fillText(endMessage, width / 2, gameHeight + 50)
 		ctx.lineWidth = 2
 	}
 }
@@ -410,6 +413,18 @@ function canPathTo(room) {
 		tryAddPathRoom(nextRoom, openList, closedList, 0, +1)
 	}
 	return (closedList.indexOf(room) >= 0)
+}
+
+function canPlayerMove() {
+	var junk = []
+	var openList = []
+	var room = roomxy[player.x][player.y]
+	//hack, misusing these methods slightly
+	tryAddPathRoom(room, openList, junk, -1, 0)
+	tryAddPathRoom(room, openList, junk, +1, 0)
+	tryAddPathRoom(room, openList, junk, 0, -1)
+	tryAddPathRoom(room, openList, junk, 0, +1)
+	return openList.length > 0
 }
 
 function canEnterRoom(room) {

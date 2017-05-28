@@ -15,7 +15,7 @@ enemies.push({name: "sparrow", minFear:3, maxFear:5, minDist:3, maxDist: 5})
 enemies.push({name: "budgie", minFear:3, maxFear:5, minDist:3, maxDist: 5})
 
 enemies.push({name: "parrot", minFear:5, maxFear:7, minDist:3, maxDist: 5})
-enemies.push({name: "pidgeon", minFear:5, maxFear:7, minDist:3, maxDist: 5})
+enemies.push({name: "pigeon", minFear:5, maxFear:7, minDist:3, maxDist: 5})
 
 enemies.push({name: "owl", minFear:7, maxFear:8, minDist:3, maxDist: 5})
 enemies.push({name: "hawk", minFear:8, maxFear:9, minDist:3, maxDist: 5})

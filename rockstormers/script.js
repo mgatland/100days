@@ -101,6 +101,8 @@ rockSprite[0] = {x:0, y:16, width:20, height: 20}
 rockSprite[1] = {x:0, y:37, width:16, height: 16}
 rockSprite[2] = {x:21, y:16, width:10, height: 10}
 
+var prizeSprite = {x:21, y:38, width:10, height: 14}
+
 var expSprites = []
 expSprites.push({x:34, y:0, width:28, height: 28})
 expSprites.push({x:64, y:1, width:12, height: 12})
@@ -113,6 +115,13 @@ var shots = []
 var rocks = []
 var exps = []
 var shotLifetime = 60
+var prize = {
+	pos:{x:0, y:0, angle:0}, 
+	sprite:prizeSprite, 
+	radius:prizeSprite.height*scale/2,
+	mass:3,
+	vel: {x:0, y:0}}
+teleportPrize()
 var players = []
 for (var i = 0; i < 2; i++) {
 	players.push(
@@ -129,6 +138,7 @@ for (var i = 0; i < 2; i++) {
 		alive: true,
 		mass: 3,
 		deaths:0,
+		score:0,
 		index:i
 	})
 }
@@ -154,7 +164,7 @@ function draw() {
 	ctx.textAlign = "left"
 	ctx.fillStyle = "white"
 	ctx.fillText("Score", 10, 40)
-	ctx.fillText(players[0].deaths + " vs " + players[1].deaths, 10, 70)
+	ctx.fillText((players[0].deaths*4 + players[1].score) + " vs " + (players[1].deaths*4 + players[0].score), 10, 70)
 
 	//hint text
 	ctx.font = "20px monospace"
@@ -172,6 +182,7 @@ function draw() {
 	rocks.forEach(function (rock) {
 		drawSprite(rock.pos, rockSprite[rock.type])
 	})
+	drawSprite(prize.pos, prize.sprite)
 	exps.forEach(function (exp) {
 		drawSprite(exp.pos, expSprites[exp.type])
 	})
@@ -185,11 +196,17 @@ function update() {
 		exp.lifetime--
 	})
 	exps = exps.filter(e => e.lifetime > 0)
+
+	prize.pos.angle += 0.02
+	move(prize)
+	wrap(prize.pos)
+
 	//asteroid density
 	var area = width * height
 	if (area / rocks.length > 150000) {
 		addEdgeRock()
 	}
+
 }
 
 function updatePlayers() {
@@ -242,10 +259,23 @@ function updatePlayers() {
 				player.respawnCounter = 60
 			}	
 
+			if (collides(prize, player)) {
+				player.score++
+				teleportPrize()
+			}
+
 			move(player)
 			wrap(player.pos)
 		}
 	});
+}
+
+function teleportPrize() {
+	prize.pos.x = Math.random() * width
+	prize.pos.y = Math.random() * height
+	prize.vel.x = 0
+	prize.vel.y = 0
+	applyForce(prize.vel, Math.random() * Math.PI * 2, 1)
 }
 
 function updateShots() {
@@ -262,6 +292,11 @@ function updateShots() {
 		var myP = collideList(shot, players)
 		if (myP) {
 			transferVel(myP.vel, shot.vel, 1 / myP.mass)
+			shot.lifetime = 0
+			addExplosion(shot.pos, 1)
+		}
+		if (collides(prize, shot)) {
+			transferVel(prize.vel, shot.vel, 1 / prize.mass)
 			shot.lifetime = 0
 			addExplosion(shot.pos, 1)
 		}

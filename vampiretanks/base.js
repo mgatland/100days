@@ -41,7 +41,6 @@ canvas.addEventListener("mousedown", mouseDown)
 canvas.addEventListener("touchstart", mouseDown)
 
 function mouseDown (e) {
-	console.log(e)
 	e.preventDefault()
 	var mouse = e.touches ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : {x:e.offsetX, y:e.offsetY}
 	//scale to lofi scale

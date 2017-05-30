@@ -16,6 +16,7 @@ var exps = []
 var turn = 0
 var nextLevelQueued = false
 var score = [0,0]
+var tankRadius = 15 //for collisions
 
 var btns = []
 btns.push({x:30, y:30+gameHeight, width:100, height: 100, text:"<"})
@@ -228,7 +229,7 @@ function explode(cX, cY, radius, damage) {
 		}
 	}
 	tanks.forEach(function (t) { 
-		if (distance(t.x,t.y,cX,cY) < radius) {
+		if (distance(t.x,t.y,cX,cY) < radius + tankRadius) {
 			damageTank(t, damage)
 		}
 	}

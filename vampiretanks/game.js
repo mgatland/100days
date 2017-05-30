@@ -155,31 +155,40 @@ function updateShot(shot) {
 		shot.dead = true
 		explode(shot.x, shot.y, 30, shot.damage)
 		if (shot.owner.ai) {
-			updateAIFromHit(shot.owner, shot.x, shot.y, tanks[0].health < playerHp)
+			updateAIFromHit(shot.owner, shot.x, shot.y, tanks[0].health < playerHp, shot.passedOverTarget)
 		}
 	}
 	shot.x += shot.vel.x
 	shot.y += shot.vel.y
 	shot.vel.y += gravity
+
+	//ai hack: did the shot pass over the player?
+	if (Math.sign(shot.x - tanks[0].x) != Math.sign(shot.x - shot.vel.x - tanks[0].x)) {
+		if (shot.y < tanks[0].y) {
+			console.log("passed over!")
+			shot.passedOverTarget = true
+		}
+	}
 }
 
-function updateAIFromHit(tank, x, y, wasHit) {
-	var hitPos = {x:x, y:y}
+function updateAIFromHit(tank, x, y, wasHit, passedOverTarget) {
+	var hitPos = {x:x, y:y, passedOverTarget: passedOverTarget}
 	var target = tanks[0]
 	var oldDist = tank.ai.lastHitPos ? Math.abs(tank.ai.lastHitPos.x - target.x) : 9999
-	var oldDir = tank.ai.lastHitPos ? Math.sign(tank.ai.lastHitPos.x - target.x): 1
+	var oldPassover = tank.ai.lastHitPos ? tank.ai.lastHitPos.passedOverTarget : false
 	var newDist = Math.abs(hitPos.x - target.x)
-	var newDir = Math.sign(hitPos.x - target.x)
+	var newPassover = hitPos.passedOverTarget
+
 	if (wasHit) {
 		//try that again!
 		return
 	}
-	if (newDist < oldDist && (oldDir == newDir) && !tank.ai.mustChangeStrategy) {
+	if (newDist <= oldDist && (oldPassover == newPassover) && !tank.ai.mustChangeStrategy) {
 		console.log("a little bit more of the same")
 		doAIAction(tank)
 	} else {
 		//just for logging
-		if (oldDir != newDir) {
+		if (oldPassover != newPassover) {
 			console.log("we overshot! turn the other way!")
 		} else if (newDist > oldDist) {
 			console.log("This is getting worse? turn the other way!")
@@ -315,6 +324,7 @@ start()
 function fire(tank) {
 	var shot = {x:tank.x, y:tank.y, vel:{x:0,y:0}, damage:50}
 	shot.owner = tank
+	shot.passedOverTarget = false
 	applyForce(shot.vel, tank.angle, 6*tank.power + 1)
 	moveInDirection(shot, tank.angle, 31)
 	shots.push(shot)

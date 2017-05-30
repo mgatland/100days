@@ -387,7 +387,7 @@ function draw() {
 		drawButton(buttons[0])
 	}
 
-	if (state === "end" || true) {
+	if (state === "end") {
 		ctx.font = "40px bold monospace"
 		ctx.textAlign = "center"
 		ctx.fillStyle = "white"

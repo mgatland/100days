@@ -164,25 +164,35 @@ function updateShot(shot) {
 }
 
 function updateAIFromHit(tank, x, y, wasHit) {
-	var lastHitPos = {x:x, y:y}
+	var hitPos = {x:x, y:y}
 	var target = tanks[0]
 	var oldDist = tank.ai.lastHitPos ? Math.abs(tank.ai.lastHitPos.x - target.x) : 9999
-	var newDist = Math.abs(lastHitPos.x - target.x)
+	var oldDir = tank.ai.lastHitPos ? Math.sign(tank.ai.lastHitPos.x - target.x): 1
+	var newDist = Math.abs(hitPos.x - target.x)
+	var newDir = Math.sign(hitPos.x - target.x)
 	if (wasHit) {
 		//try that again!
 		return
 	}
-	if (newDist < oldDist && !tank.ai.mustChangeStrategy) {
-		//repeat your last move
+	if (newDist < oldDist && (oldDir == newDir) && !tank.ai.mustChangeStrategy) {
+		console.log("a little bit more of the same")
 		doAIAction(tank)
 	} else {
+		//just for logging
+		if (oldDir != newDir) {
+			console.log("we overshot! turn the other way!")
+		} else if (newDist > oldDist) {
+			console.log("This is getting worse? turn the other way!")
+		} else {
+			console.log("we can't go further this way, we must try something else")
+		}
 		tank.ai.mustChangeStrategy = false
 		changeAIStrategy(tank)
 		doAIAction(tank)
 	}
 
 
-	tank.ai.lastHitPos = lastHitPos
+	tank.ai.lastHitPos = hitPos
 }
 
 function changeAIStrategy(tank) {
@@ -284,7 +294,7 @@ function start() {
 			health:100,
 			ai:{
 				amount:1, 
-				desiredAngle:Math.PI*1, 
+				desiredAngle:Math.PI*1.1, 
 				desiredPower:1,
 				strategy:"turnleft"}
 		})

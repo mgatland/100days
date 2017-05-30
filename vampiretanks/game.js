@@ -103,6 +103,10 @@ function draw() {
 	shots.forEach(function (t) {
 		ctx.fillStyle = "white"
 		ctx.fillRect(t.x-5,t.y-5,10,10)
+		if (t.y < 0) {
+			ctx.font = "30px monospace"
+			ctx.fillText("^", t.x-7, 30)
+		}
 	})
 	exps.forEach(function (e) {
 		ctx.fillStyle = "white"
@@ -134,7 +138,8 @@ function drawTank(t) {
 }
 
 function colorAtPoint(x,y) {
-	if (x < 0 || x >= width || y < 0 || y >= gameHeight) return "OUTSIDE"
+	if (y < 0) return emptyColor //infinite air above
+	if (x < 0 || x >= width || y >= gameHeight) return "OUTSIDE"
 	x = Math.floor(x)
 	y = Math.floor(y)
 	var index = x*4+y*width*4

@@ -81,10 +81,10 @@ function drawGrid() {
 
 function start() {
 	score = 0
-	snake = [{x:Math.floor(width/gridSize/2),y:Math.floor(height/gridSize/2)}]
+	snake = [{x:Math.floor(width/gridSize/2),y:2}]
 	shed = []
 	length = 9
-	dir = dirLeft
+	dir = dirDown
 	timer = 0
 	dead = false
 	placeApple()
@@ -106,9 +106,12 @@ function update() {
 	if (timer === 7) {
 		var x = snake[0].x + dir.x
 		var y = snake[0].y + dir.y
-		if (x < 0 || x >= gridXLength
-			|| y <= 0 || y >= gridYLength
-			|| !isEmpty({x:x,y:y})) {
+		if (x < 0) x += gridXLength
+		if (x >= gridXLength) x -= gridXLength
+		if (y < 0) y += gridYLength
+		if (y >= gridYLength) y -= gridYLength
+
+		if (!isEmpty({x:x,y:y})) {
 			dead = true
 		}
 		snake.unshift({x:x,y:y})

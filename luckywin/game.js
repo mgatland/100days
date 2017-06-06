@@ -22,9 +22,10 @@ function spinAction() {
 	showMoney()
 	spinning = true
 	resultEl.innerHTML = "..."
-	setTimeout(spin, 30, 0, 400+Math.random()*100)
-	setTimeout(spin, 30, 1, 800+Math.random()*100)
-	setTimeout(spin, 30, 2, 1200+Math.random()*100)
+	var delay = 90
+	setTimeout(spin, 30, 0, delay*1+Math.random()*4*2)
+	setTimeout(spin, 30, 1, delay*2+Math.random()*4*2)
+	setTimeout(spin, 30, 2, delay*3+Math.random()*4*2)
 
 	var oldTotalSpend = getTotalSpend()
 	var newTotalSpend = oldTotalSpend + cost
@@ -53,12 +54,12 @@ function spin(i, energy) {
 	values[i]++
 	if (values[i] >= icons.length) values[i] -= icons.length
 	spinnerEls[i].innerHTML = icons[values[i]]
-	var energy = energy - 20
-	if (energy <= 0 || (values[i] === icons.indexOf('🐈') && energy < 20 * icons.length - 1 && Math.random() < 0.2)) {
-		if (i === 2) setTimeout(showResult, 1000-1000)
+	var energy = energy - 2
+	if (energy <= 0 || (values[i] === icons.indexOf('🐈') && energy < 2 * icons.length - 1 && Math.random() < 0.2)) {
+		if (i === 2) setTimeout(showResult, 800)
 	} else {
-		var speed = 10000 / Math.min(energy, 100)
-		setTimeout(spin, speed-speed+1, i, energy)
+		var speed = 80 + Math.max(0, (15 - energy)*40)
+		setTimeout(spin, speed, i, energy)
 	}
 }
 

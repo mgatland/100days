@@ -19,7 +19,6 @@ function spinAction() {
 	if (spinning) return
 	if (money < cost) return
 	money -= cost
-	showMoney()
 	spinning = true
 	resultEl.innerHTML = "..."
 	var base = 40
@@ -31,9 +30,6 @@ function spinAction() {
 	var oldTotalSpend = getTotalSpend()
 	var newTotalSpend = oldTotalSpend + cost
 	localStorage.setItem('totalSpend', newTotalSpend)
-	console.log(newTotalSpend)
-
-	var totalWinnings = getTotalWinnings()
 	var restarts = parseInt(localStorage.getItem('restarts'))
 	if (newTotalSpend > 20 && restarts > 2) {
 		showSecretTotals = true
@@ -41,14 +37,7 @@ function spinAction() {
 	if (!countedThisGame) {
 		localStorage.setItem('restarts', restarts + 1)
 	}
-	if (showSecretTotals) {
-		var total = totalWinnings - newTotalSpend
-		if (total >= 0) {
-			secretBalanceEl.innerHTML = "All time profit: $" + total
-		} else {
-			secretBalanceEl.innerHTML = "All time loss: $" + -total
-		}
-	}
+	showMoney()
 }
 
 function spin(i, energy) {
@@ -105,6 +94,15 @@ function getTotalSpend() {
 
 function showMoney() {
 	moneyEl.innerHTML = "You have $" + money
+
+	if (showSecretTotals) {
+		var total = getTotalWinnings() - getTotalSpend()
+		if (total >= 0) {
+			secretBalanceEl.innerHTML = "All time profit: $" + total
+		} else {
+			secretBalanceEl.innerHTML = "All time loss: $" + -total
+		}
+	}
 }
 
 if(!localStorage.getItem('totalSpend')) {

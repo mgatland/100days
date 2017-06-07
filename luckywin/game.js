@@ -6,7 +6,7 @@ var moneyEl = document.querySelector('.balance')
 var resultEl = document.querySelector('.result')
 var secretBalanceEl = document.querySelector('.secret')
 var spinning = false
-var icons = ['💰', '🍇', '🐈', '💥']
+var icons = ['💰', '🍇', '🐈', '❌']
 var values = [0, 0, 0]
 var spinSpeed = [0, 0, 0]
 var money = 20
@@ -22,10 +22,11 @@ function spinAction() {
 	showMoney()
 	spinning = true
 	resultEl.innerHTML = "..."
-	var delay = 90
-	setTimeout(spin, 30, 0, delay*1+Math.random()*4*2)
-	setTimeout(spin, 30, 1, delay*2+Math.random()*4*2)
-	setTimeout(spin, 30, 2, delay*3+Math.random()*4*2)
+	var base = 40
+	var delay = 54
+	setTimeout(spin, 30, 0, base+delay*0+Math.random()*4*2)
+	setTimeout(spin, 30, 1, base+delay*1+Math.random()*4*2)
+	setTimeout(spin, 30, 2, base+delay*2+Math.random()*4*2)
 
 	var oldTotalSpend = getTotalSpend()
 	var newTotalSpend = oldTotalSpend + cost
@@ -58,7 +59,7 @@ function spin(i, energy) {
 	if (energy <= 0 || (values[i] === icons.indexOf('🐈') && energy < 2 * icons.length - 1 && Math.random() < 0.2)) {
 		if (i === 2) setTimeout(showResult, 800)
 	} else {
-		var speed = 80 + Math.max(0, (15 - energy)*40)
+		var speed = 80 + Math.max(0, (15 - energy)*30)
 		setTimeout(spin, speed, i, energy)
 	}
 }
@@ -76,10 +77,11 @@ function showResult() {
 		prize = 20
 	} else if (totals['🐈'] === 3) {
 		prize = 9
+ 	} else if (totals['❌'] === 3) {
+		prize = 3
 	} else {
-		//no prize
-		//prize += totals['💰'] * 5
-		//prize += totals['🍇'] * 1
+		//consolation prize
+		prize += totals['💰'] * 1
 	}
 	if (prize > 0) {
 		resultEl.innerHTML = "You won $" + prize + "!"

@@ -8,7 +8,6 @@
 // maybe remove the 'any except' task
 
 var startLevel = 0
-var startLevel = 20
 
 document.querySelector(".buttons").addEventListener('click', clickAction)
 var instructionsEl = document.querySelector(".instructions")

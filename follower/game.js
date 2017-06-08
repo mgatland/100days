@@ -1,8 +1,5 @@
 "use strict"
 
-//4:37 pm - 4:57 pm
-//5:20 pm 5:33 pm
-//11pm
 
 // to do:
 // [x] add walls
@@ -17,11 +14,15 @@ var dirRight = {x:1,y:0}
 var dirLeft = {x:-1,y:0}
 var dirs = [dirUp, dirDown, dirRight, dirLeft]
 
+var restartAction = "restart"
+
 var btns = []
 btns.push({x:40,y:gameHeight+110, width:80, height:80, text:"⬅", action:dirLeft})
 btns.push({x:40+120,y:gameHeight+110, width:80, height:80, text:"➔", action:dirRight})
 btns.push({x:40+60,y:gameHeight+20, width:80, height:80, text:"⬆", action:dirUp})
 btns.push({x:40+60,y:gameHeight+200, width:80, height:80, text:"⬇", action:dirDown})
+var restartButton = {x:290,y:gameHeight+110, width:300, height:80, text:"Restart", action:restartAction, visible:false}
+btns.push(restartButton)
 
 var playerSize = 32
 var playerSpeed = 5
@@ -62,6 +63,7 @@ function draw() {
 }
 
 function drawButton(btn) {
+	if (btn.visible===false) return
 	if (btn.down) {
 		ctx.fillStyle = '#0094FF'
 	} else {
@@ -84,13 +86,13 @@ function drawLevel() {
 }
 
 function start() {
+	restartButton.visible = false
 	score = 0
 	level = 0
 	lost = false
 
 	player = {x:0, y:Math.floor(gameHeight/2)}
 	playerDir = dirRight
-
 	loadNextLevel()
 }
 
@@ -101,6 +103,7 @@ function update() {
 
 		if (hasFallenOff()) {
 			lost = true
+			restartButton.visible = true
 		} else if (player.x > width) {
 			player.x -= width
 			score++
@@ -171,7 +174,11 @@ window.addEventListener("keydown", function (e) {
 })
 
 function buttonPressed(action) {
-	playerDir = action
+	if (action===restartAction) {
+		start()
+	} else {
+		playerDir = action
+	}
 }
 
 function gameClicked () {}

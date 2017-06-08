@@ -41,7 +41,7 @@ if (clickMode) {
 		
 		//update buttons
 		btns.forEach(function (btn) {
-			if (mouse.x >= btn.x && mouse.y > btn.y
+			if (btn.visible !== false && mouse.x >= btn.x && mouse.y > btn.y
 				&& mouse.x < btn.x + btn.width
 				&& mouse.y < btn.y + btn.height) {
 				buttonPressed(btn.action)
@@ -60,7 +60,7 @@ if (clickMode) {
 		mouse.x = Math.floor(mouse.x * width / canvas.offsetWidth)
 		mouse.y = Math.floor(mouse.y * height / canvas.offsetHeight)
 		btns.forEach(function (btn) {
-			if (mouse.x >= btn.x && mouse.y > btn.y
+			if (btn.visible !== false && mouse.x >= btn.x && mouse.y > btn.y
 				&& mouse.x < btn.x + btn.width
 				&& mouse.y < btn.y + btn.height) {
 				btn.down = true

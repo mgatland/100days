@@ -19,7 +19,7 @@ if (portrait) {
 //configurable constants
 var scale = 2
 var clickMode = true //or holdmode
-var controlPanelHeight = 300
+var controlPanelHeight = 400
 var gameHeight = height - controlPanelHeight
 
 function tick() {

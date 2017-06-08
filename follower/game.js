@@ -16,12 +16,17 @@ var dirs = [dirUp, dirDown, dirRight, dirLeft]
 
 var restartAction = "restart"
 
+var btnSize = 120
+var btnSpace = 10
+var upDownButtonX = btnSpace*1.5+btnSize
+var leftRightButtonY = gameHeight+20+btnSize+btnSpace
+var downButtonY = gameHeight+20+btnSize*2+btnSpace*2
 var btns = []
-btns.push({x:40,y:gameHeight+110, width:80, height:80, text:"⬅", action:dirLeft})
-btns.push({x:40+120,y:gameHeight+110, width:80, height:80, text:"➔", action:dirRight})
-btns.push({x:40+60,y:gameHeight+20, width:80, height:80, text:"⬆", action:dirUp})
-btns.push({x:40+60,y:gameHeight+200, width:80, height:80, text:"⬇", action:dirDown})
-var restartButton = {x:290,y:gameHeight+110, width:300, height:80, text:"Restart", action:restartAction, visible:false}
+btns.push({x:upDownButtonX,y:gameHeight+20, width:btnSize, height:btnSize, text:"⬆", action:dirUp})
+btns.push({x:btnSpace,y:leftRightButtonY, width:btnSize, height:btnSize, text:"⬅", action:dirLeft})
+btns.push({x:btnSpace*2+btnSize*2,y:leftRightButtonY, width:btnSize, height:btnSize, text:"➔", action:dirRight})
+btns.push({x:upDownButtonX,y:downButtonY, width:btnSize, height:btnSize, text:"⬇", action:dirDown})
+var restartButton = {x:290,y:downButtonY+30, width:300, height:80, text:"Restart", action:restartAction, visible:false}
 btns.push(restartButton)
 
 var playerSize = 32
@@ -55,10 +60,11 @@ function draw() {
 
 	ctx.fillStyle = "black"
 	ctx.font = "30px monospace"
-	var textY = gameHeight + 10
+	var textY = gameHeight + 30
 	ctx.textAlign = "left"
 	ctx.textBaseline = "top"
-	ctx.fillText("Score: " + score + " use arrow keys", width/2-100, textY)
+	ctx.fillText("Score: " + score, width/2, textY)
+	ctx.fillText("Use arrow keys", width/2, textY+40)
 	btns.forEach(drawButton)
 }
 
@@ -71,7 +77,11 @@ function drawButton(btn) {
 	}
 	ctx.fillRect(btn.x, btn.y, btn.width, btn.height)
 	ctx.fillStyle = "black"
-	ctx.font = "64px monospace"
+	if (btn.text.length === 1) {
+		ctx.font = "99px monospace"
+	} else {
+		ctx.font = "60px monospace"
+	}
 	ctx.textAlign = "center"
 	ctx.textBaseline = "top"
 	ctx.fillText(btn.text, btn.x+btn.width/2, btn.y)
@@ -169,6 +179,9 @@ window.addEventListener("keydown", function (e) {
 		  break
 		case 40: dir = dirDown
 		  break
+		case 32:
+		case 82:
+			if (lost) start()
 		}
 	if (dir) playerDir = dir
 })

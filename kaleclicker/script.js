@@ -6,8 +6,6 @@ var displayElement = document.querySelector(".total");
 var messagesElement = document.querySelector(".messages");
 
 var hint1 = false;
-var hint2 = false;
-var hint3 = false;
 var oldTick = undefined;
 
 document.querySelector(".gardenPick").addEventListener("click", function () {
@@ -22,7 +20,7 @@ var assets = [];
 
 assets.push({
 	unlocked: false,
-	cost:20,
+	cost:10,
 	buttonText: "Hire a seasonal worker",
 	buyMessageText
 : "You hired a seasonal worker.",
@@ -32,7 +30,7 @@ assets.push({
 	count: 0,//mutable
 	progress: 0,//mutable
 	payoff: 1,
-	percentEach: 0.2,
+	percentEach: 0.8,
 	codeName:"seasonalWorker"
 });
 
@@ -178,15 +176,9 @@ function displayAsset(asset) {
 
 function updateReactions() {
 	if (!assets[0].unlocked) {
-		if (total === Math.round(assets[0].cost * .25) && !hint1) {
+		if (total === Math.round(assets[0].cost * .5) && !hint1) {
 			addMessage("Keep clicking!");
 			hint1 = true;
-		} else if (total === Math.round(assets[0].cost * .5) && !hint2) {
-			addMessage("Come on!!");
-			hint2 = true;
-		} else if (total === Math.round(assets[0].cost * .75) && !hint3) {
-			addMessage("Nearly there!!!");
-			hint3 = true;
 		}
 	}
 }

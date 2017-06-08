@@ -7,7 +7,7 @@ html, body {
 
 .gameCanvas {
 	display:block;
-	background-color: #060;
+	background-color: #E8E8E7;
 	height: 100%;
 	margin: auto;
     image-rendering: optimizeSpeed;             // Older versions of FF

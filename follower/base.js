@@ -77,5 +77,3 @@ if (clickMode) {
 		btns.forEach(b => b.down = false)
 	}
 }
-
-window.requestAnimationFrame(tick)

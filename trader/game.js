@@ -1,7 +1,10 @@
-//3:09 pm - 4:53pm
+//3:09 pm - 5:05pm
 
 //basic game is working, now
+//P1
 //stocks should have trends, up and down
+
+//P1
 //underlying sectors should have trends \ crashes?
 //the whole market should have trends / crashes?
 

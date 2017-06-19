@@ -1,7 +1,8 @@
 "use strict"
 
 //2:12pm - 4:20pm (2:08)
-//5:05
+//5:05 - 6:15 (1:10)
+//total: 3:18
 
 //things to do:
 //more things in the shop

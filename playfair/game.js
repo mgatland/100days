@@ -4,6 +4,7 @@
 //days later:
 //4:51pm - 5:32PM
 //DONE -  still to publish
+//total: 2 hour 11 minutes
 
 var fiveByFive = document.querySelectorAll('.grid')
 

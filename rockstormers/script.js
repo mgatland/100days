@@ -124,6 +124,7 @@ var prize = {
 	mass:3,
 	vel: {x:0, y:0}}
 teleportPrize()
+var messageDisplayTime = 45
 var players = []
 for (var i = 0; i < 2; i++) {
 	players.push(
@@ -141,6 +142,7 @@ for (var i = 0; i < 2; i++) {
 		mass: 3,
 		deaths:0,
 		score:0,
+		messages:[],
 		index:i
 	})
 }
@@ -166,7 +168,7 @@ function draw() {
 	ctx.textAlign = "left"
 	ctx.fillStyle = "white"
 	ctx.fillText("Score", 10, 40)
-	ctx.fillText((players[0].deaths*4 + players[1].score) + " vs " + (players[1].deaths*4 + players[0].score), 10, 70)
+	ctx.fillText(players[0].score + " vs " + players[1].score, 10, 70)
 
 	//hint text
 	ctx.font = "20px monospace"
@@ -177,6 +179,9 @@ function draw() {
 
 	players.forEach(function (p) {
 		if (p.alive) drawSprite(p.pos, p.sprite)
+		if (p.messages.length > 0) {
+			drawMessage(p, p.messages[0].text)
+		}
 	})
 	shots.forEach(function (shot) {
 		drawSprite(shot.pos, shotSprite)
@@ -257,18 +262,33 @@ function updatePlayers() {
 				explodeRock(myRock, player.vel)
 				player.alive = false
 				player.deaths++
+				player.score--
 				player.respawnCounter = 60
-			}	
+				addMessage(player, "-1")
+			}
 
 			if (collides(prize, player)) {
-				player.score++
+				player.score += 10
+				addMessage(player, "+10")
 				teleportPrize()
 			}
 
 			move(player)
 			wrap(player.pos)
 		}
+		if (player.messages.length > 0) {
+			player.messages[0].age++
+			if (player.messages[0].age > messageDisplayTime) {
+				player.messages.shift()
+			}
+		}
+
 	});
+}
+
+function addMessage(player, messageString)
+{
+	player.messages.push({text:messageString, age:0})
 }
 
 function teleportPrize() {
@@ -414,6 +434,12 @@ function resizeGame() {
 }
 
 //Utilities
+
+function drawMessage(ent, text) {
+	ctx.font = "20px monospace"
+	ctx.textAlign = "center"
+	ctx.fillText(text, ent.pos.x, ent.pos.y - ent.radius - 10)
+}
 
 function drawSprite(pos, sprite) {
 	ctx.translate(pos.x, pos.y)

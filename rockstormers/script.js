@@ -263,17 +263,19 @@ function updatePlayers() {
 			var myRock = collideList(player, rocks)
 			if (myRock) {
 				explodeRock(myRock, player.vel)
-				player.alive = false
-				player.deaths++
-				player.score--
-				player.respawnCounter = 60
-				addMessage(player, "-1")
+				explodePlayer(player)
 			}
 
 			if (collides(prize, player)) {
 				player.score += 10
 				addMessage(player, "+10")
 				teleportPrize()
+			}
+
+			var myHitFriend = collideList(player, players)
+			if (myHitFriend) {
+				explodePlayer(player)
+				explodePlayer(myHitFriend)
 			}
 
 			move(player)
@@ -287,6 +289,17 @@ function updatePlayers() {
 		}
 
 	});
+}
+
+function explodePlayer(player)
+{
+	if (!player.alive) return;
+	player.alive = false
+	player.deaths++
+	player.score--
+	player.respawnCounter = 60
+	addExplosion(player.pos, 0)
+	addMessage(player, "-1")
 }
 
 function addMessage(player, messageString)
@@ -387,7 +400,7 @@ function collideList(me, list) {
 
 function collides(you, me) {
 	var dist = distance(you.pos, me.pos)
-	return dist < you.radius + me.radius
+	return dist < you.radius + me.radius && you != me && you.alive != false
 }
 
 function distance(pos1, pos2) {

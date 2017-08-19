@@ -143,14 +143,15 @@ for (var i = 0; i < 2; i++) {
 		deaths:0,
 		score:0,
 		messages:[],
-		index:i
+		index:i,
+		spawnPoint:{x:0, y:0}
 	})
 }
-players[0].pos.x = width / 4
-players[0].pos.y = height / 2
-players[1].pos.x = width * 3 / 4
-players[1].pos.y = height / 2
-
+players[0].spawnPoint.x = width / 4
+players[0].spawnPoint.y = height / 2
+players[1].spawnPoint.x = width * 3 / 4
+players[1].spawnPoint.y = height / 2
+players.forEach(p => {p.pos.x = p.spawnPoint.x; p.pos.y = p.spawnPoint.y})
 var rockMass = [20, 10, 5]
 
 addEdgeRock()
@@ -222,8 +223,8 @@ function updatePlayers() {
 			player.respawnCounter--
 			if (player.respawnCounter <= 0) {
 				player.alive = true
-				player.pos.x = width / 2
-				player.pos.y = height / 2
+				player.pos.x = player.spawnPoint.x
+				player.pos.y = player.spawnPoint.y
 				player.vel.x = 0
 				player.vel.y = 0
 			}

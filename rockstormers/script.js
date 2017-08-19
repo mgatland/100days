@@ -174,7 +174,7 @@ function draw() {
 	//hint text
 	ctx.font = "20px monospace"
 	ctx.fillText("Player 1: Arrow keys + spacebar", 10, 100)
-	ctx.fillText("Player 2: WASF + Shift (or F)", 10, 120)
+	ctx.fillText("Player 2: WASD + Shift (or F)", 10, 120)
 	ctx.fillText("(no touchscreens sorry!)", 10, 140)
 
 

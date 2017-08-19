@@ -3,6 +3,8 @@
 //13 minutes
 //then 3:32 ---
 
+// this game now has improvements made after the 100 days
+
 //P0:
 //[x] asteroids
 //[x] shots PUSH asteroids
@@ -110,7 +112,7 @@ expSprites.push({x:64, y:1, width:12, height: 12})
 ///// Game stuff /////
 
 var scale = 2
-var friction = 0.995
+var friction = 0.98
 var shots = []
 var rocks = []
 var exps = []
@@ -128,9 +130,9 @@ for (var i = 0; i < 2; i++) {
 	{
 		pos:{x:200,y:300, angle:0},
 		sprite:playerSprites[i],
-		turnSpeed: 0.08,
+		turnSpeed: 0.06,
 		vel:{x:0,y:0},
-		thrust:0.4,
+		thrust:0.2,
 		reload:0,
 		reloadRate:15,
 		shotForce:10,
@@ -203,7 +205,7 @@ function update() {
 
 	//asteroid density
 	var area = width * height
-	if (area / rocks.length > 150000) {
+	if (area / rocks.length > 220000) {
 		addEdgeRock()
 	}
 
@@ -231,19 +233,18 @@ function updatePlayers() {
 			}
 			if (player.up) {
 				applyForce(player.vel, player.pos.angle, player.thrust)
-			} else {
-				player.vel.x *= friction
-				player.vel.y *= friction
 			}
+			player.vel.x *= friction
+			player.vel.y *= friction
 			if (player.shoot && player.reload === 0) {
 				player.reload = player.reloadRate
 				var shot = {
-					pos:{x:player.pos.x,y:player.pos.y, angle:0},
+				  pos:{x:player.pos.x,y:player.pos.y, angle:0},
 				  vel:{x:player.vel.x,y:player.vel.y},
 				  lifetime:shotLifetime,
 				  radius:shotSprite.width/2*scale
 				}
-				moveInDirection(shot.pos, player.pos.angle, 11)
+				moveInDirection(shot.pos, player.pos.angle, player.radius + shot.radius)
 				applyForce(shot.vel, player.pos.angle, player.shotForce)
 				shots.push(shot)
 			}

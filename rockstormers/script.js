@@ -180,9 +180,6 @@ function draw() {
 
 	players.forEach(function (p) {
 		if (p.alive) drawSprite(p.pos, p.sprite)
-		if (p.messages.length > 0) {
-			drawMessage(p, p.messages[0].text)
-		}
 	})
 	shots.forEach(function (shot) {
 		drawSprite(shot.pos, shotSprite)
@@ -193,6 +190,11 @@ function draw() {
 	drawSprite(prize.pos, prize.sprite)
 	exps.forEach(function (exp) {
 		drawSprite(exp.pos, expSprites[exp.type])
+	})
+	players.forEach(function (p) {
+		if (p.messages.length > 0) {
+			drawMessage(p, p.messages[0].text)
+		}
 	})
 }
 
